@@ -11,7 +11,6 @@ class AuthRepository {
   AuthRepository()
       : _apiClient = ApiClient(DioClient().dio);
 
-  /// 🔹 Sign Up
   Future<AuthResponseModel> signUp({
     required String email,
     required String password,
