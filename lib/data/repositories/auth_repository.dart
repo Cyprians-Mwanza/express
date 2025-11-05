@@ -8,8 +8,7 @@ class AuthRepository {
   final ApiClient _apiClient;
   final FlutterSecureStorage _storage = const FlutterSecureStorage();
 
-  AuthRepository()
-      : _apiClient = ApiClient(DioClient().dio);
+  AuthRepository() : _apiClient = ApiClient(DioClient().dio);
 
   Future<AuthResponseModel> signUp({
     required String email,
@@ -35,10 +34,7 @@ class AuthRepository {
     required String email,
     required String password,
   }) async {
-    final body = {
-      "email": email,
-      "password": password,
-    };
+    final body = {"email": email, "password": password};
 
     final response = await _apiClient.signIn(body);
     await _storage.write(key: 'access_token', value: response.accessToken);
