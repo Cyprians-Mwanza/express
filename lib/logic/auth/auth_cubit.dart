@@ -20,7 +20,9 @@ class AuthCubit extends Cubit<AuthState> {
       } else {
         emit(AuthInitial());
       }
-    } catch (e) {
+    } catch (e, stackTrace) {
+      print('CheckLoginStatus Error: $e');
+      print(stackTrace);
       emit(AuthFailure("Session expired. Please log in again."));
     }
   }
@@ -42,8 +44,10 @@ class AuthCubit extends Cubit<AuthState> {
         role: role,
       );
       emit(AuthSignUpSuccess());
-    } catch (e) {
-      emit(AuthFailure(e.toString()));
+    } catch (e, stackTrace) {
+      print('SignUp Error: $e');
+      print(stackTrace);
+      emit(AuthFailure("Sign-up failed. Please try again."));
     }
   }
 
@@ -55,8 +59,10 @@ class AuthCubit extends Cubit<AuthState> {
         password: password,
       );
       emit(AuthSignInSuccess(response.user));
-    } catch (e) {
-      emit(AuthFailure(e.toString()));
+    } catch (e, stackTrace) {
+      print('SignIn Error: $e');
+      print(stackTrace);
+      emit(AuthFailure("Failed to sign in. Please check your credentials."));
     }
   }
 

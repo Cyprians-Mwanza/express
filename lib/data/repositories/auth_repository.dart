@@ -2,6 +2,8 @@ import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import '../../core/network/api_client.dart';
 import '../../core/network/dio_client.dart';
 import '../models/auth_response_model.dart';
+import '../models/sign_in_model.dart';
+import '../models/sign_up_model.dart';
 import '../models/user_model.dart';
 
 class AuthRepository {
@@ -17,16 +19,18 @@ class AuthRepository {
     required String lastName,
     required String role,
   }) async {
-    final body = {
-      "email": email,
-      "password": password,
-      "firstName": firstName,
-      "lastName": lastName,
-      "role": role,
-    };
+    // Use SignUpModel instead of Map
+    final body = SignUpModel(
+      email: email,
+      password: password,
+      firstName: firstName,
+      lastName: lastName,
+      // Option 1: if `role` is part of your backend model:
+      // add it to SignUpModel and regenerate code
+      // Option 2: ignore if backend sets default role
+    );
 
     final response = await _apiClient.signUp(body);
-    await _storage.write(key: 'access_token', value: response.accessToken);
     return response;
   }
 
@@ -34,10 +38,18 @@ class AuthRepository {
     required String email,
     required String password,
   }) async {
-    final body = {"email": email, "password": password};
-
+    // Use SignInModel instead of Map
+    final body = SignInModel(email: email, password: password);
     final response = await _apiClient.signIn(body);
-    await _storage.write(key: 'access_token', value: response.accessToken);
+
+    // Save access token if available
+    if (response.session?.accessToken != null) {
+      await _storage.write(
+        key: 'access_token',
+        value: response.session!.accessToken,
+      );
+    }
+
     return response;
   }
 
@@ -45,8 +57,7 @@ class AuthRepository {
     final token = await _storage.read(key: 'access_token');
     if (token == null) throw Exception("No token found. Please sign in first.");
 
-    final response = await _apiClient.getUsers("Bearer $token");
-    return response;
+    return await _apiClient.getUsers("Bearer $token");
   }
 
   Future<void> logout() async {
