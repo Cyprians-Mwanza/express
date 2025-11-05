@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "485891287317",
+    "project_id": "express-b2e39",
+    "storage_bucket": "express-b2e39.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:485891287317:android:6ca70fcd159dca65ade11c",
+        "android_client_info": {
+          "package_name": "com.example.express"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCALM5t_qZd-vMgGF-5HAlFeNO9jkP2DXw"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
