@@ -28,7 +28,9 @@ class _SplashPageState extends State<SplashPage> {
             if (state is AuthSignInSuccess) {
               Navigator.pushReplacement(
                 context,
-                MaterialPageRoute(builder: (_) => const DashboardPage()),
+                MaterialPageRoute(
+                  builder: (_) => DashboardPage(user: state.user),
+                ),
               );
             } else if (state is AuthInitial || state is AuthFailure) {
               Navigator.pushReplacement(

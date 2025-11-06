@@ -1,9 +1,13 @@
+import 'package:express/data/models/user_model.dart';
 import 'package:express/data/repositories/auth_repository.dart';
 import 'package:express/logic/auth/auth_state.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 
 class AuthCubit extends Cubit<AuthState> {
   final AuthRepository _authRepository;
+  final FlutterSecureStorage _storage = const FlutterSecureStorage();
+
   AuthCubit(this._authRepository) : super(AuthInitial());
 
   Future<void> checkLoginStatus() async {
@@ -14,9 +18,21 @@ class AuthCubit extends Cubit<AuthState> {
     }
 
     try {
-      final users = await _authRepository.getUsers();
-      if (users.isNotEmpty) {
-        emit(AuthSignInSuccess(users.first));
+      final email = await _storage.read(key: 'email');
+      final firstName = await _storage.read(key: 'first_name');
+      final lastName = await _storage.read(key: 'last_name');
+      final role = await _storage.read(key: 'role');
+
+      if (email != null) {
+        final user = UserModel(
+          id: '',
+          email: email,
+          password: '',
+          firstName: firstName ?? '',
+          lastName: lastName ?? '',
+          role: role ?? '',
+        );
+        emit(AuthSignInSuccess(user));
       } else {
         emit(AuthInitial());
       }
@@ -51,6 +67,7 @@ class AuthCubit extends Cubit<AuthState> {
     }
   }
 
+  /// 🔐 Handle login
   Future<void> signIn({required String email, required String password}) async {
     emit(AuthLoading());
     try {
@@ -58,7 +75,16 @@ class AuthCubit extends Cubit<AuthState> {
         email: email,
         password: password,
       );
-      emit(AuthSignInSuccess(response.user));
+
+      final user = response.user;
+
+      // Save user info in secure storage for persistence
+      await _storage.write(key: 'email', value: user.email);
+      await _storage.write(key: 'first_name', value: user.firstName);
+      await _storage.write(key: 'last_name', value: user.lastName);
+      await _storage.write(key: 'role', value: user.role);
+
+      emit(AuthSignInSuccess(user));
     } catch (e, stackTrace) {
       print('SignIn Error: $e');
       print(stackTrace);
@@ -66,8 +92,10 @@ class AuthCubit extends Cubit<AuthState> {
     }
   }
 
+  /// 🚪 Log out and clear all saved data
   Future<void> logout() async {
     await _authRepository.logout();
+    await _storage.deleteAll();
     emit(AuthInitial());
   }
 }

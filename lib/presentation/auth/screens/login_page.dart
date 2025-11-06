@@ -34,7 +34,9 @@ class _LoginPageState extends State<LoginPage> {
             Navigator.pop(context);
             Navigator.pushReplacement(
               context,
-              MaterialPageRoute(builder: (_) => const DashboardPage()),
+              MaterialPageRoute(
+                builder: (_) => DashboardPage(user: state.user),
+              ),
             );
           } else if (state is AuthFailure) {
             Navigator.pop(context);
