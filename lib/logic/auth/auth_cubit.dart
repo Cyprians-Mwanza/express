@@ -67,7 +67,6 @@ class AuthCubit extends Cubit<AuthState> {
     }
   }
 
-  /// 🔐 Handle login
   Future<void> signIn({required String email, required String password}) async {
     emit(AuthLoading());
     try {
@@ -78,7 +77,6 @@ class AuthCubit extends Cubit<AuthState> {
 
       final user = response.user;
 
-      // Save user info in secure storage for persistence
       await _storage.write(key: 'email', value: user.email);
       await _storage.write(key: 'first_name', value: user.firstName);
       await _storage.write(key: 'last_name', value: user.lastName);
@@ -92,7 +90,6 @@ class AuthCubit extends Cubit<AuthState> {
     }
   }
 
-  /// 🚪 Log out and clear all saved data
   Future<void> logout() async {
     await _authRepository.logout();
     await _storage.deleteAll();
