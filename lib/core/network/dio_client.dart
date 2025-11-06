@@ -34,14 +34,14 @@ class DioClient {
           return handler.next(options);
         },
         onError: (error, handler) {
-          print('❌ ERROR[${error.response?.statusCode}] => ${error.message}');
+          print(' ERROR[${error.response?.statusCode}] => ${error.message}');
           if (error.response != null) {
             print('Response Data: ${error.response?.data}');
           }
           return handler.next(error);
         },
         onResponse: (response, handler) {
-          print('✅ RESPONSE[${response.statusCode}] => ${response.data}');
+          print(' RESPONSE[${response.statusCode}] => ${response.data}');
           return handler.next(response);
         },
       ),

@@ -19,15 +19,11 @@ class AuthRepository {
     required String lastName,
     required String role,
   }) async {
-    // Use SignUpModel instead of Map
     final body = SignUpModel(
       email: email,
       password: password,
       firstName: firstName,
       lastName: lastName,
-      // Option 1: if `role` is part of your backend model:
-      // add it to SignUpModel and regenerate code
-      // Option 2: ignore if backend sets default role
     );
 
     final response = await _apiClient.signUp(body);
@@ -38,11 +34,9 @@ class AuthRepository {
     required String email,
     required String password,
   }) async {
-    // Use SignInModel instead of Map
     final body = SignInModel(email: email, password: password);
     final response = await _apiClient.signIn(body);
 
-    // Save access token if available
     if (response.session?.accessToken != null) {
       await _storage.write(
         key: 'access_token',

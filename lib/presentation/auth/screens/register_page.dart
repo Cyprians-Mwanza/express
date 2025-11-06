@@ -44,12 +44,6 @@ class _RegisterPageState extends State<RegisterPage> {
               context,
               MaterialPageRoute(builder: (_) => const LoginPage()),
             );
-          } else if (state is AuthSignInSuccess) {
-            Navigator.pop(context);
-            Navigator.pushReplacement(
-              context,
-              MaterialPageRoute(builder: (_) => const DashboardPage()),
-            );
           } else if (state is AuthFailure) {
             Navigator.pop(context);
             ScaffoldMessenger.of(
