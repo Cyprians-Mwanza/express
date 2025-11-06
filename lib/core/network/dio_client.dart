@@ -47,7 +47,6 @@ class DioClient {
       ),
     );
 
-    // 🔍 Add this LogInterceptor for full Dio-level logging (temporary)
     dio.interceptors.add(
       LogInterceptor(
         request: true,
@@ -56,7 +55,7 @@ class DioClient {
         responseBody: true,
         responseHeader: false,
         error: true,
-        logPrint: (obj) => print('🛰 $obj'),
+        logPrint: (obj) => print(' $obj'),
       ),
     );
   }
