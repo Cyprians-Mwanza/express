@@ -8,6 +8,10 @@ class DashboardPage extends StatelessWidget {
   final UserModel user;
 
   const DashboardPage({super.key, required this.user});
+  String capitalize(String text) {
+    if (text.isEmpty) return '';
+    return text[0].toUpperCase() + text.substring(1).toLowerCase();
+  }
 
   void _showProfileSheet(BuildContext context) {
     showModalBottomSheet(
@@ -41,7 +45,7 @@ class DashboardPage extends StatelessWidget {
                 ),
                 const SizedBox(height: 10),
                 Text(
-                  "${user.firstName} ${user.lastName}",
+                  "${capitalize(user.firstName)} ${capitalize(user.lastName)}",
                   style: const TextStyle(
                     fontSize: 22,
                     fontWeight: FontWeight.bold,
@@ -53,9 +57,12 @@ class DashboardPage extends StatelessWidget {
                 Expanded(
                   child: ListView(
                     children: [
-                      _buildProfileRow("First Name", user.firstName),
-                      _buildProfileRow("Last Name", user.lastName),
-                      _buildProfileRow("Role", user.role),
+                      _buildProfileRow(
+                        "First Name",
+                        capitalize(user.firstName),
+                      ),
+                      _buildProfileRow("Last Name", capitalize(user.lastName)),
+                      _buildProfileRow("Role", capitalize(user.role)),
                       const SizedBox(height: 30),
                       ElevatedButton.icon(
                         onPressed: () {
@@ -111,9 +118,27 @@ class DashboardPage extends StatelessWidget {
         backgroundColor: Colors.blueAccent,
         title: Align(
           alignment: Alignment.centerLeft,
-          child: Text(
-            'Welcome, ${user.firstName}',
-            style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+          child: RichText(
+            text: TextSpan(
+              children: [
+                const TextSpan(
+                  text: 'Welcome, ',
+                  style: TextStyle(
+                    fontSize: 20,
+                    fontWeight: FontWeight.bold,
+                    color: Colors.white,
+                  ),
+                ),
+                TextSpan(
+                  text: capitalize(user.firstName),
+                  style: const TextStyle(
+                    fontSize: 20,
+                    fontWeight: FontWeight.bold,
+                    color: Colors.green,
+                  ),
+                ),
+              ],
+            ),
           ),
         ),
         actions: [
