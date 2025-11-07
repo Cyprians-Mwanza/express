@@ -49,7 +49,7 @@ class DashboardPage extends StatelessWidget {
                 ),
                 const SizedBox(height: 5),
                 Text(user.email, style: const TextStyle(color: Colors.grey)),
-                const Divider(height: 40, thickness: 1),
+                const Divider(height: 40, thickness: 4),
                 Expanded(
                   child: ListView(
                     children: [

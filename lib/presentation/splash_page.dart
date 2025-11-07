@@ -16,7 +16,9 @@ class _SplashPageState extends State<SplashPage> {
   @override
   void initState() {
     super.initState();
-    context.read<AuthCubit>().checkLoginStatus();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      context.read<AuthCubit>().checkLoginStatus();
+    });
   }
 
   @override
@@ -24,21 +26,19 @@ class _SplashPageState extends State<SplashPage> {
     return Scaffold(
       body: BlocListener<AuthCubit, AuthState>(
         listener: (context, state) {
-          WidgetsBinding.instance.addPostFrameCallback((_) {
-            if (state is AuthSignInSuccess) {
-              Navigator.pushReplacement(
-                context,
-                MaterialPageRoute(
-                  builder: (_) => DashboardPage(user: state.user),
-                ),
-              );
-            } else if (state is AuthInitial || state is AuthFailure) {
-              Navigator.pushReplacement(
-                context,
-                MaterialPageRoute(builder: (_) => const LoginPage()),
-              );
-            }
-          });
+          if (state is AuthSignInSuccess) {
+            Navigator.pushReplacement(
+              context,
+              MaterialPageRoute(
+                builder: (_) => DashboardPage(user: state.user),
+              ),
+            );
+          } else if (state is AuthInitial || state is AuthFailure) {
+            Navigator.pushReplacement(
+              context,
+              MaterialPageRoute(builder: (_) => const LoginPage()),
+            );
+          }
         },
         child: const Center(child: CircularProgressIndicator()),
       ),
