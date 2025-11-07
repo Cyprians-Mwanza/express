@@ -76,9 +76,18 @@ class _LoginPageState extends State<LoginPage> {
                           prefixIcon: Icon(Icons.email_outlined),
                           border: OutlineInputBorder(),
                         ),
-                        validator: (value) =>
-                            value!.isEmpty ? 'Enter your email' : null,
+                        validator: (value) {
+                          if (value == null || value.isEmpty) {
+                            return 'Enter your email';
+                          }
+                          final emailRegex = RegExp(r'^[^@]+@[^@]+\.[^@]+');
+                          if (!emailRegex.hasMatch(value)) {
+                            return 'Enter a valid email address';
+                          }
+                          return null;
+                        },
                       ),
+
                       const SizedBox(height: 16),
 
                       TextFormField(
