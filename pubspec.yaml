@@ -49,6 +49,9 @@ dependencies:
   retrofit_generator: ^10.1.2
   build_runner: ^2.10.1
   json_serializable: ^6.11.1
+  flutter_launcher_icons: ^0.14.4
+  rename_app: ^1.6.5
+  flutter_native_splash: ^2.4.7
 
 dev_dependencies:
   flutter_test:
@@ -66,11 +69,22 @@ dev_dependencies:
 
 # The following section is specific to Flutter packages.
 flutter:
-
-  # The following line ensures that the Material Icons font is
-  # included with your application, so that you can use the icons in
-  # the material Icons class.
   uses-material-design: true
+  assets:
+    - assets/icons/express logo.png
+flutter_launcher_icons:
+    android: true
+    ios: true
+    image_path: "assets/icons/express logo.png"
+
+
+
+flutter_native_splash:
+  color: "#ffffff"
+  image: assets/icons/express logo.png
+  android_12:
+    image: assets/icons/express logo.png
+    color: "#ffffff"
 
   # To add assets to your application, add an assets section, like this:
   # assets:
