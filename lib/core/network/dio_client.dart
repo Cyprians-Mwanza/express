@@ -1,12 +1,12 @@
 import 'package:dio/dio.dart';
-import 'package:flutter_secure_storage/flutter_secure_storage.dart';
+import '../../data/storage/secure_storage_service.dart';
 
 class DioClient {
   static final DioClient _instance = DioClient._internal();
   factory DioClient() => _instance;
 
   late Dio dio;
-  final _storage = const FlutterSecureStorage();
+  final SecureStorageService _storageService = SecureStorageService();
 
   DioClient._internal() {
     dio = Dio(
@@ -24,10 +24,11 @@ class DioClient {
     dio.interceptors.add(
       InterceptorsWrapper(
         onRequest: (options, handler) async {
-          final token = await _storage.read(key: 'access_token');
+          final token = await _storageService.readAccessToken();
           if (token != null) {
             options.headers['Authorization'] = 'Bearer $token';
           }
+
           print(' REQUEST[${options.method}] => PATH: ${options.uri}');
           print('Headers: ${options.headers}');
           print('Body: ${options.data}');

@@ -24,34 +24,52 @@ class _RegisterPageState extends State<RegisterPage> {
 
   bool _obscurePassword = true;
 
+  void _showSnackBar(String message, {Color color = Colors.black87}) {
+    ScaffoldMessenger.of(context)
+      ..hideCurrentSnackBar()
+      ..showSnackBar(
+        SnackBar(
+          content: Text(message, style: const TextStyle(color: Colors.white)),
+          backgroundColor: color,
+          behavior: SnackBarBehavior.floating,
+          duration: const Duration(seconds: 2),
+        ),
+      );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       body: BlocConsumer<AuthCubit, AuthState>(
-        listener: (context, state) {
+        listener: (context, state) async {
           if (state is AuthLoading) {
             showDialog(
               context: context,
               barrierDismissible: false,
               builder: (_) => const Center(child: CircularProgressIndicator()),
             );
-          } else if (state is AuthSignUpSuccess) {
-            Navigator.pop(context);
-            ScaffoldMessenger.of(
-              context,
-            ).showSnackBar(SnackBar(content: Text(state.message)));
-            Navigator.pushReplacement(
-              context,
-              MaterialPageRoute(builder: (_) => const LoginPage()),
-            );
-          } else if (state is AuthFailure) {
-            Navigator.pop(context);
-            ScaffoldMessenger.of(
-              context,
-            ).showSnackBar(SnackBar(content: Text(state.message)));
+          } else {
+            if (Navigator.canPop(context)) Navigator.pop(context);
+
+            if (state is AuthSignUpSuccess) {
+              _showSnackBar(
+                'Registration successful! Redirecting to login...',
+                color: Colors.green,
+              );
+
+              await Future.delayed(const Duration(seconds: 2));
+
+              if (context.mounted) {
+                Navigator.pushReplacement(
+                  context,
+                  MaterialPageRoute(builder: (_) => const LoginPage()),
+                );
+              }
+            } else if (state is AuthFailure) {
+              _showSnackBar(state.message, color: Colors.redAccent);
+            }
           }
         },
-
         builder: (context, state) {
           return Padding(
             padding: const EdgeInsets.all(24.0),
@@ -96,7 +114,7 @@ class _RegisterPageState extends State<RegisterPage> {
 
                       TextFormField(
                         controller: _emailController,
-                        decoration: InputDecoration(
+                        decoration: const InputDecoration(
                           labelText: 'Email',
                           prefixIcon: Icon(Icons.email_outlined),
                           border: OutlineInputBorder(),
@@ -112,7 +130,6 @@ class _RegisterPageState extends State<RegisterPage> {
                           return null;
                         },
                       ),
-
                       const SizedBox(height: 16),
 
                       TextFormField(
