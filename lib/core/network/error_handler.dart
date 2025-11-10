@@ -22,7 +22,6 @@ class ErrorHandler {
           message = data;
         }
       }
-
       return Failure(message, statusCode: statusCode);
     } else if (e.type == DioExceptionType.connectionTimeout) {
       return Failure('Connection timed out');
