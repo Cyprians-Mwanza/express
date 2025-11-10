@@ -1,4 +1,7 @@
+import 'package:dartz/dartz.dart';
 import 'package:dio/dio.dart';
+import '../../core/network/error_handler.dart';
+import '../../core/network/failure.dart';
 import '../../core/network/api_client.dart';
 import '../../core/network/dio_client.dart';
 import '../models/auth_response_model.dart';
@@ -15,7 +18,7 @@ class AuthRepository {
     : _apiClient = ApiClient(DioClient().dio),
       _storageService = SecureStorageService();
 
-  Future<AuthResponseModel> signUp({
+  Future<Either<Failure, AuthResponseModel>> signUp({
     required String email,
     required String password,
     required String firstName,
@@ -31,16 +34,15 @@ class AuthRepository {
       );
 
       final response = await _apiClient.signUp(body);
-      return response;
+      return Right(response);
     } on DioException catch (e) {
-      final message = e.response?.data?['message'] ?? 'Sign-up failed';
-      throw Exception(message);
-    } catch (e) {
-      throw Exception('An unexpected error occurred during sign-up.');
+      return Left(ErrorHandler.fromDioError(e));
+    } catch (_) {
+      return Left(Failure('Unexpected error occurred during sign-up.'));
     }
   }
 
-  Future<AuthResponseModel> signIn({
+  Future<Either<Failure, AuthResponseModel>> signIn({
     required String email,
     required String password,
   }) async {
@@ -53,26 +55,27 @@ class AuthRepository {
         await _storageService.saveAccessToken(accessToken);
       }
 
-      return response;
+      return Right(response);
     } on DioException catch (e) {
-      final message = e.response?.data?['message'] ?? 'Failed to sign in';
-      throw Exception(message);
-    } catch (e) {
-      throw Exception('An unexpected error occurred during sign-in.');
+      return Left(ErrorHandler.fromDioError(e));
+    } catch (_) {
+      return Left(Failure('Unexpected error occurred during sign-in.'));
     }
   }
 
-  Future<List<UserModel>> getUsers() async {
+  Future<Either<Failure, List<UserModel>>> getUsers() async {
     final token = await _storageService.readAccessToken();
-    if (token == null) throw Exception("No token found. Please sign in first.");
+    if (token == null) {
+      return Left(Failure('No token found. Please sign in first.'));
+    }
 
     try {
-      return await _apiClient.getUsers("Bearer $token");
+      final users = await _apiClient.getUsers('Bearer $token');
+      return Right(users);
     } on DioException catch (e) {
-      final message = e.response?.data?['message'] ?? 'Failed to fetch users';
-      throw Exception(message);
-    } catch (e) {
-      throw Exception('An unexpected error occurred while fetching users.');
+      return Left(ErrorHandler.fromDioError(e));
+    } catch (_) {
+      return Left(Failure('Unexpected error occurred while fetching users.'));
     }
   }
 

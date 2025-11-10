@@ -1,3 +1,4 @@
+import 'package:express/core/utils/ui_helpers.dart';
 import 'package:express/presentation/dashboard/dashboard_page.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -14,21 +15,15 @@ class LoginPage extends StatefulWidget {
 
 class _LoginPageState extends State<LoginPage> {
   final _formKey = GlobalKey<FormState>();
-  final TextEditingController _emailController = TextEditingController();
-  final TextEditingController _passwordController = TextEditingController();
+  final _emailController = TextEditingController();
+  final _passwordController = TextEditingController();
   bool _obscurePassword = true;
 
-  void _showSnackBar(String message, {Color color = Colors.black87}) {
-    ScaffoldMessenger.of(context)
-      ..hideCurrentSnackBar()
-      ..showSnackBar(
-        SnackBar(
-          content: Text(message, style: const TextStyle(color: Colors.white)),
-          backgroundColor: color,
-          behavior: SnackBarBehavior.floating,
-          duration: const Duration(seconds: 3),
-        ),
-      );
+  @override
+  void dispose() {
+    _emailController.dispose();
+    _passwordController.dispose();
+    super.dispose();
   }
 
   @override
@@ -46,21 +41,11 @@ class _LoginPageState extends State<LoginPage> {
             if (Navigator.canPop(context)) Navigator.pop(context);
 
             if (state is AuthSignInSuccess) {
-              final messenger = ScaffoldMessenger.of(context);
-              messenger
-                ..hideCurrentSnackBar()
-                ..showSnackBar(
-                  SnackBar(
-                    content: Text(
-                      'Login successful! Welcome back',
-                      style: const TextStyle(color: Colors.white),
-                    ),
-                    backgroundColor: Colors.green,
-                    behavior: SnackBarBehavior.floating,
-                    duration: const Duration(seconds: 2),
-                  ),
-                );
-
+              showSnackBar(
+                context,
+                'Login successful! Welcome back',
+                color: Colors.green,
+              );
               Future.delayed(const Duration(seconds: 2), () {
                 Navigator.pushReplacement(
                   context,
@@ -70,11 +55,10 @@ class _LoginPageState extends State<LoginPage> {
                 );
               });
             } else if (state is AuthFailure) {
-              _showSnackBar(state.message, color: Colors.redAccent);
+              showSnackBar(context, state.message, color: Colors.redAccent);
             }
           }
         },
-
         builder: (context, state) {
           return Padding(
             padding: const EdgeInsets.all(24.0),
@@ -143,6 +127,7 @@ class _LoginPageState extends State<LoginPage> {
                         validator: (value) =>
                             value!.isEmpty ? 'Enter your password' : null,
                       ),
+
                       const SizedBox(height: 24),
 
                       ElevatedButton(
@@ -166,6 +151,7 @@ class _LoginPageState extends State<LoginPage> {
                           style: TextStyle(fontSize: 18, color: Colors.white),
                         ),
                       ),
+
                       const SizedBox(height: 16),
 
                       TextButton(

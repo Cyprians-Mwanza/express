@@ -2,17 +2,23 @@ import 'package:equatable/equatable.dart';
 import 'package:express/data/models/user_model.dart';
 
 abstract class AuthState extends Equatable {
+  const AuthState();
+
   @override
   List<Object?> get props => [];
 }
 
-class AuthInitial extends AuthState {}
+class AuthInitial extends AuthState {
+  const AuthInitial();
+}
 
-class AuthLoading extends AuthState {}
+class AuthLoading extends AuthState {
+  const AuthLoading();
+}
 
 class AuthSignUpSuccess extends AuthState {
   final String message;
-  AuthSignUpSuccess({this.message = ""});
+  const AuthSignUpSuccess({required this.message});
 
   @override
   List<Object?> get props => [message];
@@ -20,7 +26,7 @@ class AuthSignUpSuccess extends AuthState {
 
 class AuthSignInSuccess extends AuthState {
   final UserModel user;
-  AuthSignInSuccess(this.user);
+  const AuthSignInSuccess(this.user);
 
   @override
   List<Object?> get props => [user];
@@ -28,7 +34,7 @@ class AuthSignInSuccess extends AuthState {
 
 class AuthFailure extends AuthState {
   final String message;
-  AuthFailure(this.message);
+  const AuthFailure(this.message);
 
   @override
   List<Object?> get props => [message];

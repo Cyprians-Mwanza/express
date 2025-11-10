@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import '../../../core/utils/ui_helpers.dart';
 import '../../../logic/auth/auth_cubit.dart';
 import '../../../logic/auth/auth_state.dart';
 import 'login_page.dart';
@@ -13,27 +14,22 @@ class RegisterPage extends StatefulWidget {
 
 class _RegisterPageState extends State<RegisterPage> {
   final _formKey = GlobalKey<FormState>();
-  final TextEditingController _emailController = TextEditingController();
-  final TextEditingController _passwordController = TextEditingController();
-  final TextEditingController _firstNameController = TextEditingController();
-  final TextEditingController _lastNameController = TextEditingController();
-  final TextEditingController _roleController = TextEditingController(
-    text: "user",
-  );
+  final _emailController = TextEditingController();
+  final _passwordController = TextEditingController();
+  final _firstNameController = TextEditingController();
+  final _lastNameController = TextEditingController();
+  final _roleController = TextEditingController(text: "user");
 
   bool _obscurePassword = true;
 
-  void _showSnackBar(String message, {Color color = Colors.black87}) {
-    ScaffoldMessenger.of(context)
-      ..hideCurrentSnackBar()
-      ..showSnackBar(
-        SnackBar(
-          content: Text(message, style: const TextStyle(color: Colors.white)),
-          backgroundColor: color,
-          behavior: SnackBarBehavior.floating,
-          duration: const Duration(seconds: 2),
-        ),
-      );
+  @override
+  void dispose() {
+    _emailController.dispose();
+    _passwordController.dispose();
+    _firstNameController.dispose();
+    _lastNameController.dispose();
+    _roleController.dispose();
+    super.dispose();
   }
 
   @override
@@ -51,10 +47,12 @@ class _RegisterPageState extends State<RegisterPage> {
             if (Navigator.canPop(context)) Navigator.pop(context);
 
             if (state is AuthSignUpSuccess) {
-              _showSnackBar(
-                'Registration successful! Redirecting to login...',
+              showSnackBar(
+                context,
+                'Registration successful!',
                 color: Colors.green,
               );
+
               await Future.delayed(const Duration(seconds: 2));
               if (context.mounted) {
                 Navigator.pushReplacement(
@@ -63,7 +61,7 @@ class _RegisterPageState extends State<RegisterPage> {
                 );
               }
             } else if (state is AuthFailure) {
-              _showSnackBar(state.message, color: Colors.redAccent);
+              showSnackBar(context, state.message, color: Colors.redAccent);
             }
           }
         },
@@ -75,6 +73,7 @@ class _RegisterPageState extends State<RegisterPage> {
                 child: Form(
                   key: _formKey,
                   child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.center,
                     children: [
                       const Text(
                         'Create Account',
@@ -83,10 +82,16 @@ class _RegisterPageState extends State<RegisterPage> {
                           fontWeight: FontWeight.bold,
                         ),
                       ),
+                      const SizedBox(height: 8),
+                      const Text(
+                        'Join Kuza App and get started',
+                        style: TextStyle(color: Colors.grey),
+                      ),
                       const SizedBox(height: 32),
 
                       TextFormField(
                         controller: _firstNameController,
+                        textInputAction: TextInputAction.next,
                         decoration: const InputDecoration(
                           labelText: 'First Name',
                           prefixIcon: Icon(Icons.person_outline),
@@ -99,6 +104,7 @@ class _RegisterPageState extends State<RegisterPage> {
 
                       TextFormField(
                         controller: _lastNameController,
+                        textInputAction: TextInputAction.next,
                         decoration: const InputDecoration(
                           labelText: 'Last Name',
                           prefixIcon: Icon(Icons.person),
@@ -111,6 +117,8 @@ class _RegisterPageState extends State<RegisterPage> {
 
                       TextFormField(
                         controller: _emailController,
+                        textInputAction: TextInputAction.next,
+                        keyboardType: TextInputType.emailAddress,
                         decoration: const InputDecoration(
                           labelText: 'Email',
                           prefixIcon: Icon(Icons.email_outlined),
