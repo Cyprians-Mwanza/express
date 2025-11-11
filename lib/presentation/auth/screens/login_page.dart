@@ -16,8 +16,20 @@ class _LoginPageState extends State<LoginPage> {
   final _formKey = GlobalKey<FormState>();
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
-
   bool _obscurePassword = true;
+
+  void _showSnackBar(String message, {Color color = Colors.black87}) {
+    ScaffoldMessenger.of(context)
+      ..hideCurrentSnackBar()
+      ..showSnackBar(
+        SnackBar(
+          content: Text(message, style: const TextStyle(color: Colors.white)),
+          backgroundColor: color,
+          behavior: SnackBarBehavior.floating,
+          duration: const Duration(seconds: 3),
+        ),
+      );
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -30,19 +42,39 @@ class _LoginPageState extends State<LoginPage> {
               barrierDismissible: false,
               builder: (_) => const Center(child: CircularProgressIndicator()),
             );
-          } else if (state is AuthSignInSuccess) {
-            Navigator.pop(context);
-            Navigator.pushReplacement(
-              context,
-              MaterialPageRoute(builder: (_) => const DashboardPage()),
-            );
-          } else if (state is AuthFailure) {
-            Navigator.pop(context);
-            ScaffoldMessenger.of(
-              context,
-            ).showSnackBar(SnackBar(content: Text(state.message)));
+          } else {
+            if (Navigator.canPop(context)) Navigator.pop(context);
+
+            if (state is AuthSignInSuccess) {
+              final messenger = ScaffoldMessenger.of(context);
+              messenger
+                ..hideCurrentSnackBar()
+                ..showSnackBar(
+                  SnackBar(
+                    content: Text(
+                      'Login successful! Welcome back',
+                      style: const TextStyle(color: Colors.white),
+                    ),
+                    backgroundColor: Colors.green,
+                    behavior: SnackBarBehavior.floating,
+                    duration: const Duration(seconds: 2),
+                  ),
+                );
+
+              Future.delayed(const Duration(seconds: 2), () {
+                Navigator.pushReplacement(
+                  context,
+                  MaterialPageRoute(
+                    builder: (_) => DashboardPage(user: state.user),
+                  ),
+                );
+              });
+            } else if (state is AuthFailure) {
+              _showSnackBar(state.message, color: Colors.redAccent);
+            }
           }
         },
+
         builder: (context, state) {
           return Padding(
             padding: const EdgeInsets.all(24.0),
@@ -74,9 +106,18 @@ class _LoginPageState extends State<LoginPage> {
                           prefixIcon: Icon(Icons.email_outlined),
                           border: OutlineInputBorder(),
                         ),
-                        validator: (value) =>
-                            value!.isEmpty ? 'Enter your email' : null,
+                        validator: (value) {
+                          if (value == null || value.isEmpty) {
+                            return 'Enter your email';
+                          }
+                          final emailRegex = RegExp(r'^[^@]+@[^@]+\.[^@]+');
+                          if (!emailRegex.hasMatch(value)) {
+                            return 'Enter a valid email address';
+                          }
+                          return null;
+                        },
                       ),
+
                       const SizedBox(height: 16),
 
                       TextFormField(

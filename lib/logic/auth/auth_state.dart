@@ -12,9 +12,7 @@ class AuthLoading extends AuthState {}
 
 class AuthSignUpSuccess extends AuthState {
   final String message;
-  AuthSignUpSuccess({
-    this.message = "Account created successfully. Please log in.",
-  });
+  AuthSignUpSuccess({this.message = ""});
 
   @override
   List<Object?> get props => [message];

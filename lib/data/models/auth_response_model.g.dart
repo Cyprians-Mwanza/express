@@ -8,12 +8,22 @@ part of 'auth_response_model.dart';
 
 AuthResponseModel _$AuthResponseModelFromJson(Map<String, dynamic> json) =>
     AuthResponseModel(
-      accessToken: json['accessToken'] as String,
       user: UserModel.fromJson(json['user'] as Map<String, dynamic>),
+      session: json['session'] == null
+          ? null
+          : SessionModel.fromJson(json['session'] as Map<String, dynamic>),
     );
 
 Map<String, dynamic> _$AuthResponseModelToJson(AuthResponseModel instance) =>
+    <String, dynamic>{'user': instance.user, 'session': instance.session};
+
+SessionModel _$SessionModelFromJson(Map<String, dynamic> json) => SessionModel(
+  accessToken: json['access_token'] as String,
+  refreshToken: json['refresh_token'] as String,
+);
+
+Map<String, dynamic> _$SessionModelToJson(SessionModel instance) =>
     <String, dynamic>{
-      'accessToken': instance.accessToken,
-      'user': instance.user,
+      'access_token': instance.accessToken,
+      'refresh_token': instance.refreshToken,
     };

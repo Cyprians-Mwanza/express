@@ -1,36 +1,62 @@
 import 'package:dio/dio.dart';
-import 'package:flutter_secure_storage/flutter_secure_storage.dart';
+import '../../data/storage/secure_storage_service.dart';
 
 class DioClient {
   static final DioClient _instance = DioClient._internal();
   factory DioClient() => _instance;
 
   late Dio dio;
-  final _storage = const FlutterSecureStorage();
+  final SecureStorageService _storageService = SecureStorageService();
 
   DioClient._internal() {
     dio = Dio(
       BaseOptions(
         baseUrl: 'https://api.kuzadev.online',
-        connectTimeout: const Duration(seconds: 60),
-        receiveTimeout: const Duration(seconds: 60),
-        headers: {'Content-Type': 'application/json'},
+        connectTimeout: const Duration(seconds: 20),
+        receiveTimeout: const Duration(seconds: 20),
+        headers: {
+          'Content-Type': 'application/json',
+          'User-Agent': 'FlutterApp',
+        },
       ),
     );
 
     dio.interceptors.add(
       InterceptorsWrapper(
         onRequest: (options, handler) async {
-          final token = await _storage.read(key: 'access_token');
+          final token = await _storageService.readAccessToken();
           if (token != null) {
             options.headers['Authorization'] = 'Bearer $token';
           }
+
+          print(' REQUEST[${options.method}] => PATH: ${options.uri}');
+          print('Headers: ${options.headers}');
+          print('Body: ${options.data}');
           return handler.next(options);
         },
         onError: (error, handler) {
-          print('API Error: ${error.response?.statusCode} - ${error.message}');
+          print(' ERROR[${error.response?.statusCode}] => ${error.message}');
+          if (error.response != null) {
+            print('Response Data: ${error.response?.data}');
+          }
           return handler.next(error);
         },
+        onResponse: (response, handler) {
+          print(' RESPONSE[${response.statusCode}] => ${response.data}');
+          return handler.next(response);
+        },
+      ),
+    );
+
+    dio.interceptors.add(
+      LogInterceptor(
+        request: true,
+        requestBody: true,
+        requestHeader: true,
+        responseBody: true,
+        responseHeader: false,
+        error: true,
+        logPrint: (obj) => print(' $obj'),
       ),
     );
   }
